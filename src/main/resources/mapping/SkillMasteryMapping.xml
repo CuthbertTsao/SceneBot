@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.strelitzia.arknightsDao.SkillMateryMapper">
+    <resultMap id="BaseResultMap" type="top.strelitzia.model.MaterialInfo">
+        <result column="material_name" property="materialName" jdbcType="VARCHAR"/>
+        <result column="use_number" property="materialNum" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <resultMap id="NameResultMap" type="top.strelitzia.model.OperatorName">
+        <result column="operator_name" property="operatorName" jdbcType="VARCHAR"/>
+        <result column="char_id" property="charId" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <select id="selectSkillUpByIdAndLevel" resultMap="BaseResultMap">
+        SELECT
+            b.material_name,
+            a.use_number
+        FROM
+            t_operator_skill_mastery_costs a
+        LEFT JOIN t_material b ON a.use_material_id = b.material_id
+        WHERE
+            mastery_level = #{level}
+        AND skill_id = #{skillId}
+    </select>
+
+    <select id="selectSkillIDByAgentOrSkill" resultType="java.lang.Integer">
+        SELECT
+            b.skill_id
+        FROM
+            t_operator a LEFT JOIN
+            t_operator_skill b ON a.operator_id = b.operator_id
+        WHERE
+            a.operator_name = #{name}
+        OR b.skill_name = #{name}
+        ORDER BY skill_index asc
+    </select>
+
+    <select id="selectSkillPngByName" resultType="java.lang.String">
+        select skill_png from t_operator_skill where skill_id = #{skillId}
+    </select>
+
+    <select id="selectSkillNameById" resultType="java.lang.String">
+        select skill_name from t_operator_skill where skill_id = #{skillId}
+    </select>
+
+    <select id="selectOperatorNameById" resultMap="NameResultMap">
+        select char_id, operator_name
+        from
+            t_operator a LEFT JOIN
+            t_operator_skill b ON a.operator_id = b.operator_id
+        where
+            skill_id = #{skillId}
+        limit 1
+    </select>
+
+</mapper>

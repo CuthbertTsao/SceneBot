@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.strelitzia.arknightsDao.UpdateMapper">
+
+    <select id="selectOperatorIdByName" resultType="java.lang.Integer">
+        SELECT
+            operator_id
+        FROM
+            t_operator
+        WHERE
+            operator_name = #{name}
+        AND operator_class is not null
+        ORDER BY
+            operator_id DESC
+        LIMIT 1
+    </select>
+
+    <select id="selectSkillIdByName" resultType="java.lang.Integer">
+        SELECT
+            skill_id
+        FROM
+            t_operator_skill
+        WHERE
+            skill_name = #{SkillName}
+        ORDER BY
+            skill_id DESC
+        LIMIT 1
+    </select>
+
+    <select id="getVersion" resultType="java.lang.String">
+        select data_version from a_data_version
+    </select>
+
+    <select id="getVersionStatus" resultType="java.lang.Integer">
+        select status from a_data_version limit 1
+    </select>
+
+    <update id="doingUpdateVersion">
+        update a_data_version set status = 1;
+    </update>
+
+    <update id="doingDownloadVersion">
+        update a_data_version set status = 2;
+    </update>
+
+    <update id="doneUpdateVersion">
+        update a_data_version set status = 0;
+    </update>
+
+    <update id="updateVersion" parameterType="java.lang.String">
+        update a_data_version set data_version = #{newVersion}
+    </update>
+
+    <insert id="updateTags">
+        insert into t_operator_tags_relation
+        (operator_name,operator_rarity,operator_tags)
+        values (#{name},#{rarity},#{tags})
+    </insert>
+
+    <insert id="insertOperator" parameterType="top.strelitzia.model.OperatorInfo">
+        INSERT INTO t_operator (
+            operator_name,
+            operator_rarity,
+            operator_class,
+            available,
+            in_limit
+        )
+        VALUES
+            (#{operator_name},
+            #{operator_rarity},
+            #{operator_class},
+            #{available},
+            #{in_limit})
+    </insert>
+
+    <insert id="insertOperatorEvolve" parameterType="top.strelitzia.model.OperatorEvolveInfo">
+        INSERT INTO t_operator_evolve_costs (
+            operator_id,
+            evolve_level,
+            use_material_id,
+            use_number
+        )
+        VALUES
+            (#{operatorId},
+            #{evolveLevel},
+            #{useMaterialId},
+            #{useNumber})
+    </insert>
+
+    <insert id="insertOperatorSkill" parameterType="top.strelitzia.model.OperatorSkillInfo">
+        INSERT INTO t_operator_skill (
+            operator_id,skill_index,skill_name, skill_id_yj
+        )
+        VALUES
+            (#{operatorId},
+            #{skillIndex},
+            #{skillName},
+            #{skillIdYj})
+    </insert>
+
+    <insert id="updateStageData">
+        INSERT INTO t_stage
+        (stage_id,zone_id,code,ap_cost)
+        VALUES
+        (
+            #{stageId},#{zoneId},#{code},#{apCost}
+        )
+    </insert>
+
+    <insert id="updateZoneData">
+        INSERT INTO t_zone
+            (zone_id,zone_name)
+        VALUES
+        (
+            #{zoneId},#{zoneName}
+        )
+    </insert>
+
+    <insert id="updateItemData">
+        INSERT INTO t_material
+            (material_id,material_name,material_icon)
+        VALUES
+        (
+            #{id},#{name},#{icon}
+        )
+    </insert>
+
+    <insert id="updateMatrixData">
+        INSERT INTO t_matrix
+            (stage_id,item_id,quantity,times,rate)
+        VALUES
+        (
+            #{stageId},#{itemId},#{quantity},#{times},(1.0*#{quantity}/#{times}*100)
+        )
+    </insert>
+
+    <insert id="insertSkillMater" parameterType="top.strelitzia.model.SkillMaterInfo">
+        INSERT INTO t_operator_skill_mastery_costs (
+            skill_id,mastery_level,use_material_id,use_number
+        )
+        VALUES
+            (#{skillId},#{materLevel},
+            #{useMaterialId},#{useNumber})
+    </insert>
+
+    <insert id="updateEnemy" parameterType="top.strelitzia.model.EnemyInfo">
+        INSERT INTO t_enemy(
+            enemy_id,
+            name,
+            atk,
+            baseAttackTime,
+            def,
+            hpRecoveryPerSec,
+            magicResistance,
+            massLevel,
+            maxHp,
+            moveSpeed,
+            rangeRadius,
+            level,
+            silenceImmune,
+            sleepImmune,
+            stunImmune)
+        VALUES(
+            #{enemyId},
+            #{name},
+            #{atk},
+            #{baseAttackTime},
+            #{def},
+            #{hpRecoveryPerSec},
+            #{magicResistance},
+            #{massLevel},
+            #{maxHp},
+            #{moveSpeed},
+            #{rangeRadius},
+            #{level},
+            #{silenceImmune},
+            #{sleepImmune},
+            #{stunImmune}
+            )
+    </insert>
+
+    <insert id="insertOperatorTalent" parameterType="top.strelitzia.model.TalentInfo">
+        INSERT INTO t_operator_talent (
+            operator_id,
+            talent_name,
+            description,
+            phase,
+            level,
+            potential
+        )
+        VALUES
+            (#{operatorId},
+            #{talentName},
+            #{description},
+            #{phase},
+            #{level},
+            #{potential})
+    </insert>
+
+    <insert id="updateSkillDecs" parameterType="top.strelitzia.model.SkillDesc">
+        INSERT INTO t_operator_skill_desc (
+            skill_id,
+            skill_type,
+            sp_type,
+            sp_cost,
+            sp_init,
+            duration,
+            description,
+            skill_level,
+            max_charge
+        )
+        VALUES
+            (#{skillId},
+            #{skillType},
+            #{spType},
+            #{spCost},
+            #{spInit},
+            #{duration},
+            #{description},
+            #{skillLevel},
+            #{maxCharge})
+    </insert>
+
+    <insert id="insertMaterialMade">
+        INSERT INTO t_material_made (
+            material_id,
+            use_material_id,
+            use_number
+        )
+        VALUES
+            (#{materialId},
+            #{useMaterialId},
+            #{useNumber})
+    </insert>
+
+    <update id="updateOperatorData" parameterType="top.strelitzia.model.OperatorData">
+        UPDATE t_operator
+        SET atk = #{atk},
+         def= #{def},
+         magicResistance= #{magicResistance},
+         maxHp= #{maxHp},
+         blockCnt= #{blockCnt},
+         cost= #{cost},
+         baseAttackTime= #{baseAttackTime},
+         respawnTime= #{respawnTime}
+        WHERE
+            operator_id = #{id}
+    </update>
+
+    <update id="updateOperatorInfo" parameterType="top.strelitzia.model.OperatorBasicInfo">
+        UPDATE t_operator
+        SET char_id=#{charId},
+        draw_name = #{drawName},
+        info_name = #{infoName},
+        code_name = #{codeName},
+        sex = #{sex},
+        come_from = #{comeFrom},
+        birthday = #{birthday},
+        race = #{race},
+        height = #{height},
+        infection = #{infection},
+        comprehensive_test = #{comprehensiveTest},
+        objective_resume = #{objectiveResume},
+        clinical_diagnosis = #{clinicalDiagnosis},
+        archives1 = #{archives1},
+        archives2 = #{archives2},
+        archives3 = #{archives3},
+        archives4 = #{archives4},
+        promotion_info = #{promotionInfo}
+        where operator_id = #{operatorId}
+    </update>
+
+    <delete id="clearOperatorData">
+        delete from t_operator where char_id is null;
+    </delete>
+
+    <delete id="clearMatrixData">
+        DELETE FROM t_matrix where matrix_id IN (SELECT matrix_id FROM t_matrix LIMIT 100);
+    </delete>
+
+    <select id="selectMatrixCount" resultType="java.lang.Integer">
+        select count(matrix_id) from t_matrix;
+    </select>
+</mapper>

@@ -1,0 +1,25 @@
+﻿server:
+  port: 8088
+spring:
+  main:
+    allow-bean-definition-overriding: true
+userConfig:
+  # 多个选项用空格隔开
+  botNames: '稀音 音音 兄 笨 音酱 音小姐'
+  qqList: ''
+  pwList: ''
+scheduled:
+  # 每5分钟监听一次B站动态
+  biliJob: 0 */5 * * * ?
+  # 每天早8点播报干员庆生
+  birthdayJob: 0 0 8 */1 * ?
+  # 每10分钟检查一次数据更新
+  updateJob: 0 */10 * * * ?
+  # 每周日晚5点剿灭提醒
+  exterminateJob: 0 0 17 ? * SUN
+  # 每天4点抽卡次数清空
+  cleanJob: 0 0 4 */1 * ?
+baiduConfig:
+  APP_ID: 
+  API_KEY: 
+  SECRET_KEY: 

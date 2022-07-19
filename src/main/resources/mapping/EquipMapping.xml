@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.strelitzia.arknightsDao.EquipMapper">
+    <resultMap id="BaseResultMap" type="top.strelitzia.model.EquipInfo">
+        <result column="equip_id" property="equipId" jdbcType="VARCHAR"/>
+        <result column="equip_name" property="equipName" jdbcType="VARCHAR"/>
+        <result column="char_id" property="charId" jdbcType="VARCHAR"/>
+        <result column="phase" property="phase" jdbcType="INTEGER"/>
+        <result column="level" property="level" jdbcType="INTEGER"/>
+        <result column="desc" property="desc" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <resultMap id="BuffResultMap" type="top.strelitzia.model.EquipBuff">
+        <result column="buff_name" property="buffName" jdbcType="VARCHAR"/>
+        <result column="value" property="value" jdbcType="DOUBLE"/>
+        <result column="level" property="level" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <resultMap id="CostResultMap" type="top.strelitzia.model.MaterialInfo">
+        <result column="material_name" property="materialName" jdbcType="VARCHAR"/>
+        <result column="use_number" property="materialNum" jdbcType="INTEGER"/>
+        <result column="level" property="level" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <insert id="insertEquipInfo" parameterType="top.strelitzia.model.EquipInfo">
+        insert into t_equip
+            (equip_id, equip_name, char_id, phase, `level`, `desc`)
+            values(
+                #{equipId}, #{equipName}, #{charId},
+                #{phase}, #{level}, #{desc}
+            )
+    </insert>
+
+    <insert id="insertEquipCost">
+        insert into t_equip_cost
+            (equip_id, material_id, use_number, level)
+            values(
+                #{equipId}, #{materialId}, #{useNumber}, #{level}
+            )
+    </insert>
+
+    <insert id="insertEquipBuff">
+        insert into t_equip_buff
+            (equip_id, buff_name, value, level)
+            values(
+                #{equipId}, #{buffKey}, #{value}, #{level}
+            )
+    </insert>
+
+    <insert id="insertEquipMission">
+        insert into t_equip_mission
+            (equip_id, mission_id, mission_desc)
+            values(
+                #{equipId}, #{missionId}, #{desc}
+            )
+    </insert>
+
+    <select id="selectEquipByName" parameterType="java.lang.String" resultMap="BaseResultMap">
+        SELECT
+            equip_id, equip_name, phase, `level`, `desc`
+        FROM
+            t_equip
+        WHERE
+            char_id = (
+                SELECT
+                    char_id
+                FROM
+                    t_operator
+                WHERE
+                    operator_name = #{name}
+                LIMIT 1
+            )
+    </select>
+
+    <select id="selectEquipBuffById" resultMap="BuffResultMap">
+        SELECT
+            buff_name, `value`, level
+        FROM
+            t_equip_buff
+        WHERE
+            equip_id = #{equipId}
+        AND level = #{level}
+    </select>
+
+    <select id="selectEquipCostById" resultMap="CostResultMap">
+        SELECT
+            material_name, use_number, level
+        FROM
+            t_equip_cost e
+        left join t_material m on e.material_id = m.material_id
+        WHERE
+            e.equip_id = #{equipId}
+        AND e.level = #{level}
+    </select>
+
+    <select id="selectEquipMissionById" parameterType="java.lang.String" resultType="java.lang.String">
+        SELECT
+            mission_desc
+        FROM
+            t_equip_mission
+        WHERE
+            equip_id = #{equipId}
+    </select>
+
+    <select id="selectAllEquipId" resultType="java.lang.String">
+        select equip_id from t_equip;
+    </select>
+</mapper>

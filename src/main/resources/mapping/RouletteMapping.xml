@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.strelitzia.dao.RouletteMapper">
+    <resultMap id="BaseResultMap" type="top.strelitzia.model.RouletteInfo">
+        <result column="group_id" property="groupId" jdbcType="INTEGER"/>
+        <result column="bullet" property="bullet" jdbcType="INTEGER"/>
+        <result column="trigger" property="trigger" jdbcType="INTEGER"/>
+        <result column="participant_qq_1" property="participantQQ1" jdbcType="INTEGER"/>
+        <result column="participant_qq_2" property="participantQQ2" jdbcType="INTEGER"/>
+        <result column="participant_qq_3" property="participantQQ3" jdbcType="INTEGER"/>
+        <result column="participant_qq_4" property="participantQQ4" jdbcType="INTEGER"/>
+        <result column="participant_qq_5" property="participantQQ5" jdbcType="INTEGER"/>
+        <result column="participant_qq_6" property="participantQQ6" jdbcType="INTEGER"/>
+        <result column="participant_num" property="participantNum" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <!--  根据群号查询子弹位置和开枪次数是否相符确定子弹会不会射出  -->
+    <select id="rouletteByQQ" resultMap="BaseResultMap">
+        SELECT
+        group_id, bullet, trigger
+        FROM
+        a_roulette
+        WHERE
+        group_id = #{groupId,jdbcType=INTEGER}
+    </select>
+
+    <!--  插入群号，若已存在，则更新子弹位置  -->
+    <update id="rouletteTarget">
+        INSERT INTO a_roulette (group_id, bullet)
+        VALUES
+        (#{groupId,jdbcType=VARCHAR},1) ON CONFLICT(group_id)
+        DO update set
+        bullet = #{bullet,jdbcType=INTEGER}
+    </update>
+
+    <!-- 更新开枪次数  -->
+    <update id="rouletteShoot">
+        INSERT INTO a_roulette (group_id, trigger)
+        VALUES
+        (#{groupId,jdbcType=VARCHAR},1) ON CONFLICT(group_id)
+        DO update set
+        trigger = #{trigger,jdbcType=INTEGER}
+    </update>
+
+    <!--  清空轮盘所有数据  -->
+    <update id="cleanRoulette">
+        UPDATE a_roulette
+        SET
+        bullet = 6, trigger = 5
+    </update>
+
+
+    <!--  插入群号，若已存在，则更新参与者1QQ -->
+    <update id="rouletteParticipant1">
+        INSERT INTO a_roulette (group_id, participant_qq_1)
+        VALUES
+        (#{groupId,jdbcType=VARCHAR},1) ON CONFLICT(group_id)
+        DO update set
+        participant_qq_1 = #{participant,jdbcType=INTEGER}, participant_num = participant_num + 1
+    </update>
+
+    <!--  插入群号，若已存在，则更新参与者2QQ  -->
+    <update id="rouletteParticipant2">
+        INSERT INTO a_roulette (group_id, participant_qq_2)
+        VALUES
+        (#{groupId,jdbcType=VARCHAR},1) ON CONFLICT(group_id)
+        DO update set
+        participant_qq_2 = #{participant,jdbcType=INTEGER}, participant_num = participant_num + 1
+    </update>
+
+    <!--  插入群号，若已存在，则更新参与者3QQ  -->
+    <update id="rouletteParticipant3">
+        INSERT INTO a_roulette (group_id, participant_qq_3)
+        VALUES
+        (#{groupId,jdbcType=VARCHAR},1) ON CONFLICT(group_id)
+        DO update set
+        participant_qq_3 = #{participant,jdbcType=INTEGER}, participant_num = participant_num + 1
+    </update>
+
+    <!--  插入群号，若已存在，则更新参与者4QQ  -->
+    <update id="rouletteParticipant4">
+        INSERT INTO a_roulette (group_id, participant_qq_4)
+        VALUES
+        (#{groupId,jdbcType=VARCHAR},1) ON CONFLICT(group_id)
+        DO update set
+        participant_qq_4 = #{participant,jdbcType=INTEGER}, participant_num = participant_num + 1
+    </update>
+
+    <!--  插入群号，若已存在，则更新参与者5QQ  -->
+    <update id="rouletteParticipant5">
+        INSERT INTO a_roulette (group_id, participant_qq_5)
+        VALUES
+        (#{groupId,jdbcType=VARCHAR},1) ON CONFLICT(group_id)
+        DO update set
+        participant_qq_5 = #{participant,jdbcType=INTEGER}, participant_num = participant_num + 1
+    </update>
+
+    <!--  插入群号，若已存在，则更新参与者6QQ  -->
+    <update id="rouletteParticipant6">
+        INSERT INTO a_roulette (group_id, participant_qq_6)
+        VALUES
+        (#{groupId,jdbcType=VARCHAR},1) ON CONFLICT(group_id)
+        DO update set
+        participant_qq_6 = #{participant,jdbcType=INTEGER}, participant_num = participant_num + 1
+    </update>
+
+    <!--  //根据群号查询轮盘赌对决信息  -->
+    <select id="rouletteDuelByGroup" resultMap="BaseResultMap">
+        SELECT
+        group_id, participant_qq_1, participant_qq_2, participant_qq_3, participant_qq_4, participant_qq_5, participant_qq_6, participant_num
+        FROM
+        a_roulette
+        WHERE
+        group_id = #{groupId,jdbcType=INTEGER}
+    </select>
+
+    <!--  清空清空轮盘赌对决所有数据  -->
+    <update id="cleanRouletteDuel">
+        UPDATE a_roulette
+        SET
+        participant_qq_1 = 0, participant_qq_2 = 0, participant_qq_3 = 0, participant_qq_4 = 0, participant_qq_5 = 0, participant_qq_6 = 0, participant_num = 1;
+    </update>
+
+</mapper>
