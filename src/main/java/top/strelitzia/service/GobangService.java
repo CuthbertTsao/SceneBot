@@ -3,6 +3,7 @@ package top.strelitzia.service;
 import net.mamoe.mirai.Bot;
 import net.mamoe.mirai.contact.MemberPermission;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import top.angelinaBot.annotation.AngelinaGroup;
 import top.angelinaBot.container.AngelinaEventSource;
@@ -14,11 +15,19 @@ import top.angelinaBot.util.SendMessageUtil;
 import top.strelitzia.dao.AdminUserMapper;
 import top.strelitzia.util.AdminUtil;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.List;
 
-
+/**
+ * @author Cuthbert
+ * @Date 2022/7/19 22:29
+ **/
 @Service
 public class GobangService {
 
@@ -451,62 +460,62 @@ public class GobangService {
      */
     public BufferedImage DrawBoard(List<Long> board,Boolean circleTurn,String circleName,String squareName,BigDecimal lastPiece) {
         long groupId = board.get(0);
-        TextLine textLine = new TextLine(25);
+        DrawGobang gobang = new DrawGobang();
         //添加选手名字
-        textLine.addString("选手信息：");
-        textLine.nextLine();
+        gobang.addGobangBoard("选手信息：");
+        gobang.nextLine();
         //姓名写入textLine
-        textLine.addString(circleName + "（●）");
-        textLine.nextLine();
-        textLine.addString(squareName + "（■）");
-        textLine.nextLine();
-        textLine.nextLine();
+        gobang.addGobangBoard(circleName + "（●）");
+        gobang.nextLine();
+        gobang.addGobangBoard(squareName + "（■）");
+        gobang.nextLine();
+        gobang.nextLine();
         //获取回合情况以及上一枚落子信息
-        textLine.addString("现在是");
+        gobang.addGobangBoard("现在是");
         if (circleTurn) {
-            textLine.addString("●的回合");
-            textLine.nextLine();
+            gobang.addGobangBoard("●的回合");
+            gobang.nextLine();
             if (lastPiece != null) {
-                textLine.addString("上枚落子为" + lastPiece + "■");
-                textLine.nextLine();
+                gobang.addGobangBoard("上枚落子为" + lastPiece + "■");
+                gobang.nextLine();
             }
         }else {
-            textLine.addString("■的回合");
-            textLine.nextLine();
+            gobang.addGobangBoard("■的回合");
+            gobang.nextLine();
             if (lastPiece != null) {
-                textLine.addString("上枚落子为" + lastPiece + "●");
-                textLine.nextLine();
+                gobang.addGobangBoard("上枚落子为" + lastPiece + "●");
+                gobang.nextLine();
             }
         }
 
         //绘制棋盘
-        textLine.addGobangBoard("   1 2 3 4 5 6 7 89101112131415");
-        textLine.nextLine();
+        gobang.addGobangBoard("   1 2 3 4 5 6 7 89101112131415");
+        gobang.nextLine();
         //循环添加所有的行
         for (int a =1; a <= 15; a++){
             if (a<10){
-                textLine.addString(" ");
+                gobang.addGobangBoard(" ");
             }
-            textLine.addString(  a + "");
+            gobang.addGobangBoard(  a + "");
             long row = board.get(a);
             //循环添加一行里所有的列
             for (int b = 1; b<= 15; b++){
                 int piece = intAt(row, b);
                 switch (piece){
                     case 1:
-                        textLine.addGobangBoard("●");
+                        gobang.addGobangBoard("●");
                         break;
                     case 2:
-                        textLine.addGobangBoard("■");
+                        gobang.addGobangBoard("■");
                         break;
                     default:
-                        textLine.addGobangBoard("□");
+                        gobang.addGobangBoard("□");
                         break;
                 }
             }
-            textLine.nextLine();
+            gobang.nextLine();
         }
-        return textLine.drawGobangBoard();
+        return gobang.drawGobangBoard();
     }
 
 
@@ -704,5 +713,157 @@ public class GobangService {
 
 
 
+
+}
+
+
+/**
+ * 内置了棋盘绘画，相较于框架里的textLine删掉了自动换行
+ */
+class DrawGobang {
+    //文本内容
+    private final List<List<Object>> text = new ArrayList<>();
+    //单行内容
+    private List<Object> line = new ArrayList<>();
+    //列数
+    private int width = 0;
+    //行数
+    private int height = 0;
+    //画图指针
+    private int pointers;
+
+
+
+    /**
+     * 为内容增加一个图片，图片可以超出最长字符限制
+     *
+     * @param image 图片
+     */
+    public void addImage(BufferedImage image) {
+        pointers += 3;
+        addSpace();
+        line.add(image);
+        addSpace();
+    }
+
+
+    /**
+     * 为内容添加空格，若添加空格后超出最长限制，则仅添加一个
+     *
+     * @param spaceNum 空格数
+     */
+    public void addSpace(int spaceNum) {
+        line.add(spaceNum);
+        pointers += spaceNum;
+    }
+
+    /**
+     * 默认只增加一个空格
+     */
+    public void addSpace() {
+        addSpace(1);
+    }
+
+    /**
+     * 换行
+     */
+    public void nextLine() {
+        if (pointers > width) {
+            width = pointers;
+        }
+        pointers = 0;
+        height++;
+        text.add(line);
+        line = new ArrayList<>();
+    }
+
+    /**
+     * 添加单独一行的居中字符串，居中字符串必须单独一行
+     *
+     * @param s 字符串
+     */
+    public void addCenterStringLine(String s) {
+        StringBuilder sb = new StringBuilder(s);
+        if (pointers != 0) {
+            nextLine();
+        }
+        pointers = s.length();
+        line.add(sb);
+        nextLine();
+    }
+
+    /**
+     * 为内容增加一行字符串，为了便于画棋盘去除了换行判断（你丫明明画的下为啥换行？？）
+     *
+     * @param s 字符串
+     */
+    public void addGobangBoard(String s) {
+        pointers += s.length();
+        line.add(s);
+    }
+
+    public BufferedImage drawGobangBoard() {
+        return drawGobangBoard(50);
+    }
+
+    /**
+     * 将TextLine生成一个图片
+     *
+     * @param size 单个字符大小
+     * @return 生成图片
+     */
+    public BufferedImage drawGobangBoard(int size) {
+        if (!line.isEmpty()) {
+            height++;
+            text.add(line);
+        }
+        width = 18;
+        BufferedImage image = new BufferedImage((width + 2) * size, (height + 2) * size, BufferedImage.TYPE_INT_RGB);
+        Graphics graphics = image.getGraphics();
+
+        graphics.setColor(new Color(245, 218, 107));
+        graphics.fillRect(0, 0, (width + 2) * size, (height + 2) * size);
+        graphics.setColor(new Color(243, 236, 217, 255));
+        graphics.fillRect(size / 2, size / 2, (width + 1) * size, (height + 1) * size);
+        graphics.setColor(Color.BLACK);
+        graphics.setFont(new Font("宋体", Font.BOLD, size));
+
+        int x = size / 2;
+        int y = size / 2;
+        for (List<Object> line : text) {
+            for (Object obj : line) {
+                if (obj instanceof String) {
+                    String str = (String) obj;
+                    graphics.drawString(str, x, y + size);
+                    x += str.length() * size;
+                }
+                if (obj instanceof StringBuilder) {
+                    String str = ((StringBuilder) obj).toString();
+                    graphics.drawString(str, (width - str.length()) / 2 * size, y + size);
+                    x = size / 2;
+                }
+                if (obj instanceof BufferedImage) {
+                    BufferedImage bf = (BufferedImage) obj;
+                    graphics.drawImage(bf, x, y, size, size, null);
+                    x += size;
+                }
+                if (obj instanceof Integer) {
+                    x += (int) obj * size;
+                }
+            }
+            x = size / 2;
+            y += size;
+        }
+
+        //这个logo为什么能获取到我也没明白
+        try {
+            InputStream is = new ClassPathResource("/pic/logo.jpg").getInputStream();
+            graphics.drawImage(ImageIO.read(is), image.getWidth() - size / 2, 0, size / 2, size / 2, null);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        graphics.dispose();
+        return image;
+    }
 
 }
