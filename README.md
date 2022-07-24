@@ -14,3 +14,4 @@ TodayWife
 Permission  
 GobangService  
 BlackHistory  
+SudokuService  
