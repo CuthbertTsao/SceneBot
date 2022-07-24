@@ -563,7 +563,7 @@ public class GobangService {
      * @param xy 落子的坐标
      * @param board 棋盘数据
      */
-    public boolean GobangOver(BigDecimal xy, List<Long> board){
+    private boolean GobangOver(BigDecimal xy, List<Long> board){
         //p为落子类型（circle或square）
         int p = GetPieceByXY(xy, board);
         //将xy坐标解析为x坐标及y坐标

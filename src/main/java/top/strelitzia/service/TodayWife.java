@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 
 
 /**
- * @author arctrash
+ * @author Cuthbert
  * @Date 2022/6/21 22:56
  **/
 @Service
@@ -50,7 +50,7 @@ public class TodayWife {
     public ReplayInfo todayWife(MessageInfo messageInfo) {
         //准备工作
         ReplayInfo replayInfo = new ReplayInfo(messageInfo);
-        StringBuilder reply = new StringBuilder(messageInfo.getName() + "，\n");
+        StringBuilder reply = new StringBuilder("*警告：请勿用此功能刷屏*\n" + messageInfo.getName() + "，\n");
         UserFoundInfo userFoundInfo = userFoundMapper.selectUserFoundByQQ(messageInfo.getQq());
         if (userFoundInfo == null) {
             userFoundInfo = new UserFoundInfo();
@@ -91,7 +91,7 @@ public class TodayWife {
                         reply = new StringBuilder("设置完成");
                     }
                 } else {
-                    reply.append("您没有权限编辑哦");
+                    reply = new StringBuilder("您没有权限编辑哦");
                 }
             }
 
@@ -112,7 +112,7 @@ public class TodayWife {
                     reply = new StringBuilder("设置完成");
                 }
             } else {
-                reply.append("您没有权限编辑哦");
+                reply = new StringBuilder("您没有权限编辑哦");
             }
 
         } else if (messageInfo.getArgs().size() == 4) {
@@ -125,7 +125,7 @@ public class TodayWife {
                 userFoundMapper.updateTodayWifeByQq(qq, wife, group);
                 reply = new StringBuilder("设置完成");
             } else {
-                reply.append("您没有权限编辑哦");
+                reply = new StringBuilder("您没有权限编辑哦");
             }
 
 
@@ -174,3 +174,5 @@ public class TodayWife {
 
 
 }
+
+

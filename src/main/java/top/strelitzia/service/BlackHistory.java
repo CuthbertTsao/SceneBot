@@ -79,10 +79,10 @@ public class BlackHistory {
                 switch (code) {
 
                     case "删除":
-                        if (!b && messageInfo.getUserAdmin().equals(MemberPermission.MEMBER)) {
+                        /*if (!b && messageInfo.getUserAdmin().equals(MemberPermission.MEMBER)) {
                             replayInfo.setReplayMessage("您无权删除");
                             return replayInfo;
-                        }
+                        }*/
                         //判断是否有指定编号
                         if (messageInfo.getArgs().size() > 2) {
                             String num = messageInfo.getArgs().get(2);
