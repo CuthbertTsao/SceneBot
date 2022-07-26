@@ -14,6 +14,7 @@ import top.strelitzia.model.AdminUserInfo;
 import top.strelitzia.model.UserFoundInfo;
 import top.strelitzia.service.AgentService;
 import top.strelitzia.service.GroupAdminInfoService;
+import top.strelitzia.service.SudokuService;
 import top.strelitzia.util.AdminUtil;
 
 import javax.imageio.ImageIO;
@@ -73,4 +74,27 @@ public class AngelinaController {
             return null;
         }
     }
+
+    @GetMapping(value = "sudokuAnswer")
+    public int[][] webSudokuAnswerService(){
+        SudokuService s = new SudokuService();
+        return s.generateAnswer();
+    }
+
+    @GetMapping(value = "sudokuPuzzle")
+    public int[][] webSudokuPuzzleService(@RequestParam int[][] answer,@RequestParam int difficulty){
+        SudokuService s = new SudokuService();
+        return s.generatePuzzle(answer,difficulty,50);
+    }
+
+    @GetMapping(value = "sudokuDraw", produces = MediaType.IMAGE_PNG_VALUE)
+    public byte[] webSudokuDrawService(@RequestParam int[][] puzzle,@RequestParam int[][] filled,@RequestParam int difficulty) throws IOException {
+        SudokuService s = new SudokuService();
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        ImageIO.write(s.drawBoard(puzzle,filled,difficulty), "png", out);
+        return out.toByteArray();
+    }
+
+
+
 }
