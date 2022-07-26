@@ -18,6 +18,8 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -493,29 +495,43 @@ public class SudokuService {
                 if (puzzle[r][c]==0) zero+=1;
             }
         }
-        switch (zero){
-            case 42:
-                difficulty = 0;
-                break;
-            case  50:
-                difficulty = 1;
-                break;
-            default:
-                difficulty = 2;
-                break;
+        if (zero<=42){
+            difficulty = 0;
+        }else if (zero<=50){
+            difficulty = 1;
+        }else {
+            difficulty = 2;
         }
         return difficulty;
     }
 
     public BufferedImage drawBoard(int[][] puzzle,int[][] filled,int difficulty){
-        BufferedImage img = new BufferedImage(800,900,BufferedImage.TYPE_INT_BGR);
-        Graphics g = img.getGraphics();
+        BufferedImage img = new BufferedImage(1029,1500,BufferedImage.TYPE_INT_BGR);
+        Graphics2D g = (Graphics2D) img.getGraphics();
         //填充背景
-        g.setColor(Color.WHITE);
-        g.fillRect(0,0,800,900);
+        try {
+            InputStream is = Files.newInputStream(Paths.get("runFile/sudoku/background.png"));
+            g.drawImage(ImageIO.read(is), 0, 0, 1029, 1500, null);
+            //g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        }catch (FileNotFoundException e){
+            g.setColor(Color.WHITE);
+            g.fillRect(0,0,1029,1500);
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        g.setColor(new Color(255,255,255, 163));
+        g.fillRect(32,318,964,964);
+        g.fillRect(270,180,500,90);
+        g.fillRect(376,1422,582,25);
+
+        g.setFont(new Font("楷体", Font.BOLD, 20));
+        g.setColor(Color.BLACK);
+        g.drawString("稀音Bot开源 https://github.com/Cuthbert-yong/SceneBot", 380,1440);
+
         //设置字体
-        g.setFont(new Font("宋体", Font.BOLD, 60));
-        g.setColor(Color.black);
+        g.setFont(new Font("宋体", Font.BOLD, 70));
+        g.setColor(Color.BLACK);
         StringBuilder s = new StringBuilder("数独");
         switch (difficulty){
             case 0:
@@ -529,51 +545,52 @@ public class SudokuService {
                 break;
 
         }
-        g.drawString(String.valueOf(s),200,100);
+        g.drawString(String.valueOf(s),274,250);
 
         //划细线
-        g.fillRect(40,219,720,2);
-        g.fillRect(40,299,720,2);
-        g.fillRect(40,459,720,2);
-        g.fillRect(40,539,720,2);
-        g.fillRect(40,699,720,2);
-        g.fillRect(40,779,720,2);
+        g.fillRect(64,449,900,2);
+        g.fillRect(64,549,900,2);
+        g.fillRect(64,749,900,2);
+        g.fillRect(64,849,900,2);
+        g.fillRect(64,1049,900,2);
+        g.fillRect(64,1149,900,2);
 
-        g.fillRect(119,140,2,720);
-        g.fillRect(199,140,2,720);
-        g.fillRect(359,140,2,720);
-        g.fillRect(439,140,2,720);
-        g.fillRect(599,140,2,720);
-        g.fillRect(679,140,2,720);
+        g.fillRect(163,350,2,900);
+        g.fillRect(263,350,2,900);
+        g.fillRect(463,350,2,900);
+        g.fillRect(563,350,2,900);
+        g.fillRect(763,350,2,900);
+        g.fillRect(863,350,2,900);
 
         //划粗线
-        g.fillRect(40,138,720,4);
-        g.fillRect(40,378,720,4);
-        g.fillRect(40,618,720,4);
-        g.fillRect(40,858,720,4);
+        g.fillRect(62,348,904,4);
+        g.fillRect(62,648,904,4);
+        g.fillRect(62,948,904,4);
+        g.fillRect(62,1248,904,4);
 
-        g.fillRect( 38,140,4,720);
-        g.fillRect(278,140,4,720);
-        g.fillRect(518,140,4,720);
-        g.fillRect(758,140,4,720);
+        g.fillRect(62,348,4,904);
+        g.fillRect(362,348,4,904);
+        g.fillRect(662,348,4,904);
+        g.fillRect(962,348,4,904);
 
         //循环添加数字
-        g.setFont(new Font("AR PL UMing HK", Font.BOLD, 80));
+        g.setFont(new Font("AR PL UMing HK", Font.BOLD, 90));
         for(int r=0;r<9;r++){
             for (int c=0;c<9;c++){
-                if (puzzle[r][c] !=0) g.drawString(String.valueOf(puzzle[r][c]),16 + 40 + c*80,-10 + 140 + (r+1)*80);
+                if (puzzle[r][c] !=0) g.drawString(String.valueOf(puzzle[r][c]),25 + 64 + c*100,-15 + 350 + (r+1)*100);
             }
         }
         g.setColor(new Color(54, 95, 178));
         for(int r=0;r<9;r++){
             for (int c=0;c<9;c++){
-                if (filled[r][c] !=0) g.drawString(String.valueOf(filled[r][c]),16 + 40 + c*80,-10 +140 + (r+1)*80);
+                if (filled[r][c] !=0) g.drawString(String.valueOf(filled[r][c]),25 + 64 + c*100,-15 + 350 + (r+1)*100);
             }
         }
+
         //获取logo
         try {
             InputStream is = new ClassPathResource("/pic/logo.jpg").getInputStream();
-            g.drawImage(ImageIO.read(is), 780, 0, 20 , 20 , null);
+            g.drawImage(ImageIO.read(is), 1004, 0, 25 , 25 , null);
         } catch (IOException e) {
             e.printStackTrace();
         }
