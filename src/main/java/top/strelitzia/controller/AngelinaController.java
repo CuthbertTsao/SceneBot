@@ -106,6 +106,42 @@ public class AngelinaController {
         return str;
     }
 
+    @GetMapping(value = "sudokuSearch")
+    public Integer webSudokuSearchService(@RequestParam int x,@RequestParam int y,@RequestParam String str){
+        //去掉无关信息，只保留数字
+        String REGEX ="[^(0-9)]";
+        str = Pattern.compile(REGEX).matcher(str).replaceAll("").trim();
+        SudokuService s = new SudokuService();
+        int[][] board = new int[9][9];
+        int i = 0;
+        for(int r=0;r<9;r++){
+            for (int c=0;c<9;c++){
+                board[r][c] = Integer.parseInt(str.charAt(i)+"");
+                i++;
+            }
+        }
+        return board[x][y];
+    }
+
+    @GetMapping(value = "sudokuFall")
+    public String webSudokuFallService(@RequestParam int num,@RequestParam int x,@RequestParam int y,@RequestParam String str){
+        //去掉无关信息，只保留数字
+        String REGEX ="[^(0-9)]";
+        str = Pattern.compile(REGEX).matcher(str).replaceAll("").trim();
+        SudokuService s = new SudokuService();
+        int[][] board = new int[9][9];
+        int i = 0;
+        for(int r=0;r<9;r++){
+            for (int c=0;c<9;c++){
+                board[r][c] = Integer.parseInt(str.charAt(i)+"");
+                i++;
+            }
+        }
+        board[x][y] = num;
+        str = Pattern.compile(REGEX).matcher(Arrays.deepToString(board)).replaceAll("").trim();
+        return str;
+    }
+
     @GetMapping(value = "sudokuDraw", produces = MediaType.IMAGE_PNG_VALUE)
     public byte[] webSudokuDrawService(@RequestParam String puzzle,@RequestParam String filled,@RequestParam int difficulty) throws IOException {
         //去掉无关信息，只保留数字
