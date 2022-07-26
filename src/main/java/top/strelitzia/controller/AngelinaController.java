@@ -21,7 +21,9 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Pattern;
 
 @RequestMapping("angelina")
 @RestController
@@ -76,22 +78,53 @@ public class AngelinaController {
     }
 
     @GetMapping(value = "sudokuAnswer")
-    public int[][] webSudokuAnswerService(){
+    public String webSudokuAnswerService(){
         SudokuService s = new SudokuService();
-        return s.generateAnswer();
+        String str = Arrays.deepToString(s.generateAnswer());
+        //去掉无关信息，只保留数字
+        String REGEX ="[^(0-9)]";
+        str = Pattern.compile(REGEX).matcher(str).replaceAll("").trim();
+        return str;
     }
 
     @GetMapping(value = "sudokuPuzzle")
-    public int[][] webSudokuPuzzleService(@RequestParam int[][] answer,@RequestParam int difficulty){
+    public String webSudokuPuzzleService(@RequestParam String answer,@RequestParam int difficulty){
+        //去掉无关信息，只保留数字
+        String REGEX ="[^(0-9)]";
+        answer = Pattern.compile(REGEX).matcher(answer).replaceAll("").trim();
         SudokuService s = new SudokuService();
-        return s.generatePuzzle(answer,difficulty,50);
+        int[][] board = new int[9][9];
+        int i = 0;
+        for(int r=0;r<9;r++){
+            for (int c=0;c<9;c++){
+                board[r][c] = Integer.parseInt(answer.charAt(i)+"");
+                i++;
+            }
+        }
+        String str = Arrays.deepToString(s.generatePuzzle(board, difficulty, 50));
+        str = Pattern.compile(REGEX).matcher(str).replaceAll("").trim();
+        return str;
     }
 
     @GetMapping(value = "sudokuDraw", produces = MediaType.IMAGE_PNG_VALUE)
-    public byte[] webSudokuDrawService(@RequestParam int[][] puzzle,@RequestParam int[][] filled,@RequestParam int difficulty) throws IOException {
+    public byte[] webSudokuDrawService(@RequestParam String puzzle,@RequestParam String filled,@RequestParam int difficulty) throws IOException {
+        //去掉无关信息，只保留数字
+        String REGEX ="[^(0-9)]";
+        puzzle = Pattern.compile(REGEX).matcher(puzzle).replaceAll("").trim();
+        filled = Pattern.compile(REGEX).matcher(filled).replaceAll("").trim();
         SudokuService s = new SudokuService();
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        ImageIO.write(s.drawBoard(puzzle,filled,difficulty), "png", out);
+        int[][] p = new int[9][9];
+        int[][] f = new int[9][9];
+        int i = 0;
+        for(int r=0;r<9;r++){
+            for (int c=0;c<9;c++){
+                p[r][c] = Integer.parseInt(puzzle.charAt(i)+"");
+                f[r][c] = Integer.parseInt(filled.charAt(i)+"");
+                i++;
+            }
+        }
+        ImageIO.write(s.drawBoard(p,f,difficulty), "png", out);
         return out.toByteArray();
     }
 
