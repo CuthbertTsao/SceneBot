@@ -33,16 +33,6 @@ public class SudokuService {
 
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(SudokuService.class);
 
-    @AngelinaGroup(keyWords = {"test"} )
-    public ReplayInfo sudokuTest(MessageInfo messageInfo) {
-        ReplayInfo replayInfo = new ReplayInfo(messageInfo);
-        int[][] filled = new int[9][9];
-        SudokuGenerator s = new SudokuGenerator(9);
-        int[][] puzzle = s.generatePuzzle(generateAnswer(), Integer.parseInt(messageInfo.getArgs().get(1)),50);
-        replayInfo.setReplayImg(drawBoard(puzzle,filled, Integer.parseInt(messageInfo.getArgs().get(1))));
-        return replayInfo;
-    }
-
     @AngelinaGroup(keyWords = {"数独"} )
     public ReplayInfo sudoku(MessageInfo messageInfo) {
         ReplayInfo replayInfo = new ReplayInfo(messageInfo);
@@ -126,8 +116,7 @@ public class SudokuService {
                 }
                 answer = generateAnswer();
                 writeTxt(answer,path+"/answer.txt");
-                SudokuGenerator s = new SudokuGenerator(9);
-                puzzle = s.generatePuzzle(answer, difficulty,50);
+                puzzle = generatePuzzle(answer, difficulty,50);
                 writeTxt(puzzle,path+"/puzzle.txt");
                 writeTxt(filled,path+"/filled.txt");
 
@@ -172,8 +161,7 @@ public class SudokuService {
             }
             answer = generateAnswer();
             writeTxt(answer,path+"/answer.txt");
-            SudokuGenerator s = new SudokuGenerator(9);
-            puzzle = s.generatePuzzle(answer, difficulty,50);
+            puzzle = generatePuzzle(answer, difficulty,50);
             writeTxt(puzzle,path+"/puzzle.txt");
             writeTxt(filled,path+"/filled.txt");
         }
@@ -362,19 +350,6 @@ public class SudokuService {
             }
         }
         return replayInfo;
-    }
-
-    public static void main(String[] args) {
-        String str = "1.14";
-        int num = str.charAt(str.length()-1)-'0';
-        str = str.substring(0, str.length() - 1);//去掉最后一位
-        //去掉无关信息，只保留数字和小数点
-        String REGEX ="[^(0-9).]";
-        str = Pattern.compile(REGEX).matcher(str).replaceAll("").trim();
-
-        BigDecimal xy = new BigDecimal(str);
-        int x = getX(xy);
-        int y = getY(xy);
     }
 
     private boolean over(int[][] puzzle,int[][] filled){
@@ -586,13 +561,13 @@ public class SudokuService {
         g.setFont(new Font("AR PL UMing HK", Font.BOLD, 80));
         for(int r=0;r<9;r++){
             for (int c=0;c<9;c++){
-                if (puzzle[r][c] !=0) g.drawString(String.valueOf(puzzle[r][c]),18 + 40 + c*80,-10 + 140 + (r+1)*80);
+                if (puzzle[r][c] !=0) g.drawString(String.valueOf(puzzle[r][c]),16 + 40 + c*80,-10 + 140 + (r+1)*80);
             }
         }
         g.setColor(new Color(54, 95, 178));
         for(int r=0;r<9;r++){
             for (int c=0;c<9;c++){
-                if (filled[r][c] !=0) g.drawString(String.valueOf(filled[r][c]),18 + 40 + c*80,-10 +140 + (r+1)*80);
+                if (filled[r][c] !=0) g.drawString(String.valueOf(filled[r][c]),16 + 40 + c*80,-10 +140 + (r+1)*80);
             }
         }
         //获取logo
@@ -608,7 +583,7 @@ public class SudokuService {
     }
 
 
-    public static int[][] generateAnswer() {
+    public int[][] generateAnswer() {
         int k1, k2, counter = 1;
         SudokuBoard bd = new SudokuBoard();
         bd.generate();
@@ -633,6 +608,11 @@ public class SudokuService {
             counter++;
         }
         return bd.getBoard();
+    }
+
+    public int[][] generatePuzzle(int[][] answer,int difficulty, int patience){
+        SudokuGenerator s = new SudokuGenerator(9);
+        return s.generatePuzzle(answer, difficulty,50);
     }
 }
 
