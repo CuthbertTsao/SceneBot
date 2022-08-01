@@ -15,3 +15,4 @@ Permission
 GobangService  
 BlackHistory  
 SudokuService  
+cpService  
