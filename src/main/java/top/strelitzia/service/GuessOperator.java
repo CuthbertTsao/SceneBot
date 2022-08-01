@@ -51,9 +51,9 @@ public class GuessOperator {
         if (groupList.contains(messageInfo.getGroupId())) {
             replayInfo.setReplayMessage("本群正在进行猜干员，请查看消息记录");
             return replayInfo;
-        } else if (messageInfo.getUserAdmin() == MemberPermission.MEMBER && !sqlAdmin) {
+        /*} else if (messageInfo.getUserAdmin() == MemberPermission.MEMBER && !sqlAdmin) {
             replayInfo.setReplayMessage("仅有本群群主和管理员有权限开启猜干员");
-            return replayInfo;
+            return replayInfo;*/
         } else {
             //添加群组防止重复猜
             groupList.add(messageInfo.getGroupId());

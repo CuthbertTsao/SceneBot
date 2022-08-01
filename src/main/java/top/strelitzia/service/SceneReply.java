@@ -47,7 +47,7 @@ public  class SceneReply {
         return replayInfo;
     }
 
-    @AngelinaGroup(keyWords = {"子三连","子三联"}, description = "猫子三连")
+    @AngelinaGroup(keyWords = {"猫子三连","猫子三联"}, description = "猫子三连")
     public ReplayInfo CatTriple(MessageInfo messageInfo) {
         ReplayInfo replayInfo = new ReplayInfo(messageInfo);
         File file = new File("runFile/Reply/CatTriple");

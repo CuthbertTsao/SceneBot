@@ -42,7 +42,8 @@ public class PictureSharing {
     @AngelinaGroup(keyWords = {"好图", "美图"}, description = "展示图库中的随机一张图（图库由bot搭建者自行管理）")
     public ReplayInfo gpic(MessageInfo messageInfo) {
         ReplayInfo replayInfo = new ReplayInfo(messageInfo);
-        File file = new File("runFile/gpic");
+        File file = new File("runFile/gpic/");
+        if (!file.exists() && !file.isDirectory()) file.mkdirs();
         File[] fileList = file.listFiles();
         if (messageInfo.getArgs().size() > 1) {
             String num = messageInfo.getArgs().get(1);
@@ -84,7 +85,7 @@ public class PictureSharing {
                                 File pic = new File("runFile/gpic/gpic" + num + ".jpg");
                                 //判断指定图片是否存在
                                 if (pic.exists()) {
-                                    boolean value = pic.delete();
+                                    pic.delete();
                                     StringBuilder reply = new StringBuilder("图片" + num + "已成功删除");
                                     //如果图片不为最后一张，自动填补编号的空缺
                                     String lastpicnum = String.valueOf(fileList.length);

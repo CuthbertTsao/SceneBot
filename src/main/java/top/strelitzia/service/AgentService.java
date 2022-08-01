@@ -417,7 +417,7 @@ public class AgentService {
             g.drawImage(bImage, 81 + No * 82, 320, 60, 60, null);
             No++;
         }
-        /**g.setFont(new Font("楷体", Font.BOLD, 20));
+        /*g.setFont(new Font("楷体", Font.BOLD, 20));
         g.setColor(Color.WHITE);
         g.drawString("结果仅供参考，详细代码请见：", 470, 420);
         g.drawString("http://www.angelina-bot.top/", 470, 440);

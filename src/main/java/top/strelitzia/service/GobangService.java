@@ -308,7 +308,7 @@ public class GobangService {
                         i--;
                         continue;
                     }
-                    if (xy.compareTo(BigDecimal.valueOf(getX(xy)))==0){
+                    if (xy.compareTo(BigDecimal.valueOf(getX(xy)))==0 || !validXY(xy)){
                         replayInfo.setReplayMessage("错误的落子指令\n指令应形如4.2或13.14（小数点前为行，小数点后为列），且行与列均属于范围[1,15]");
                         sendMessageUtil.sendGroupMsg(replayInfo);
                         replayInfo.setReplayMessage(null);
@@ -458,7 +458,7 @@ public class GobangService {
         g.fillRect(74, 225, circleName.length()*42+55, 50);
         g.fillRect(74, 295, squareName.length()*42+55, 50);
         g.fillRect(74, 360, 290, 50);//现在是谁的回合 的背景
-        if (lastPiece!=null) g.fillRect(540, 360, str.length()*42, 50);
+        if (lastPiece!=null) g.fillRect(540, 360, str.length()*42-42, 50);
 
         g.setColor(new Color(145, 120, 99, 255));
         g.fillOval(79,230,40,40);
@@ -475,7 +475,7 @@ public class GobangService {
         g.drawString("现在是   的回合",79,400);
         if (lastPiece!=null){
             g.drawString(str,545,400);
-            g.drawOval(135+getY(lastPiece)*60-25-60,500+getX(lastPiece)*60-25-60,50,50);
+            //g.fillOval(21 + 135+getY(lastPiece)*60-25-60, 21 + 500+getX(lastPiece)*60-25-60,8,8);
         }
 
         //循环添加所有的行

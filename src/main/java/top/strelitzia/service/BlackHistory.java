@@ -44,20 +44,21 @@ public class BlackHistory {
     @AngelinaGroup(keyWords = {"黑历史","bh"}, description = "随机展现一张黑历史")
     public ReplayInfo bh(MessageInfo messageInfo) {
         ReplayInfo replayInfo = new ReplayInfo(messageInfo);
-        File file = new File("runFile/bh");
+        File file = new File("runFile/bh/"+messageInfo.getGroupId());
+        if (!file.exists() && !file.isDirectory()) file.mkdirs();
         File[] fileList = file.listFiles();
         if (messageInfo.getArgs().size() > 1) {
             String num = messageInfo.getArgs().get(1);
-            File pic = new File("runFile/bh/bh" + num + ".jpg");
+            File pic = new File("runFile/bh/"+messageInfo.getGroupId()+"/bh" + num + ".jpg");
             if(pic.exists()) {
                 replayInfo.setReplayMessage("图片编号" + num );
-                replayInfo.setReplayImg(new File("runFile/bh/bh" + num + ".jpg"));
+                replayInfo.setReplayImg(new File("runFile/bh/"+messageInfo.getGroupId()+"/bh" + num + ".jpg"));
             }else {
                 replayInfo.setReplayMessage("图片不存在，请输入正确的编号。可以通过“稀音黑历史库”来查询当前图库编号范围");
             }
         }else {
             int num = (int) (1+Math.random()*(fileList.length));
-            replayInfo.setReplayImg(new File("runFile/bh/bh" + num + ".jpg"));
+            replayInfo.setReplayImg(new File("runFile/bh/"+messageInfo.getGroupId()+"/bh" + num + ".jpg"));
             replayInfo.setReplayMessage("图片编号" + num );
         }
         return replayInfo;
@@ -68,7 +69,8 @@ public class BlackHistory {
     @AngelinaGroup(keyWords = {"黑历史库","bh库"}, description = "查看图库中的编号范围，或对图库进行快速编辑")
     public ReplayInfo bhRange(MessageInfo messageInfo) {
         ReplayInfo replayInfo = new ReplayInfo(messageInfo);
-        File file = new File("runFile/bh");
+        File file = new File("runFile/bh/"+messageInfo.getGroupId());
+        if (!file.exists() && !file.isDirectory()) file.mkdirs();
         File[] fileList = file.listFiles();
         //图库快捷编辑模块
         if (messageInfo.getArgs().size() > 1) {
@@ -86,7 +88,7 @@ public class BlackHistory {
                         //判断是否有指定编号
                         if (messageInfo.getArgs().size() > 2) {
                             String num = messageInfo.getArgs().get(2);
-                            File pic = new File("runFile/bh/bh" + num + ".jpg");
+                            File pic = new File("runFile/bh/"+messageInfo.getGroupId()+"/bh" + num + ".jpg");
                             //判断指定图片是否存在
                             if (pic.exists()) {
                                 boolean value = pic.delete();
@@ -95,8 +97,8 @@ public class BlackHistory {
                                 String lastpicnum = String.valueOf(fileList.length);
                                 if (!num.equals(lastpicnum)) {
                                     int d = fileList.length;
-                                    File lastpic = new File("runFile/bh/bh" + fileList.length + ".jpg");
-                                    lastpic.renameTo(new File("runFile/bh/bh" + num + ".jpg"));
+                                    File lastpic = new File("runFile/bh/"+messageInfo.getGroupId()+"/bh" + fileList.length + ".jpg");
+                                    lastpic.renameTo(new File("runFile/bh/"+messageInfo.getGroupId()+"/bh" + num + ".jpg"));
                                     reply.append("\n已自动将图片" + d + "填补至空缺：" + num);
                                 }
                                 replayInfo.setReplayMessage(reply.toString());
@@ -124,7 +126,7 @@ public class BlackHistory {
                                         }
                                     //编号为纯数字，进行后续操作
                                         //判断编号是否被占用
-                                        File gpic = new File("runFile/bh/bh" + num + ".jpg");
+                                        File gpic = new File("runFile/bh/"+messageInfo.getGroupId()+"/bh" + num + ".jpg");
                                         if (gpic.exists()) {
                                             replayInfo.setReplayMessage("该编号已被占用");
                                         } else {
@@ -134,7 +136,7 @@ public class BlackHistory {
                                             } else {
                                                 //仅带一张图，下载至图库
                                                 for (String url : messageInfo.getImgUrlList()) {
-                                                    downloadOneFile("runFile/bh/bh" + num + ".jpg", url);
+                                                    downloadOneFile("runFile/bh/"+messageInfo.getGroupId()+"/bh" + num + ".jpg", url);
                                                 }
                                                 replayInfo.setReplayMessage("成功添加图片" + num);
                                             }
@@ -146,7 +148,7 @@ public class BlackHistory {
                                 reply = new StringBuilder("成功添加" + messageInfo.getImgUrlList().size() + "张图片");
                                 for (String url: messageInfo.getImgUrlList()) {
                                     p++;
-                                    downloadOneFile("runFile/bh/bh" + p + ".jpg", url);
+                                    downloadOneFile("runFile/bh/"+messageInfo.getGroupId()+"/bh" + p + ".jpg", url);
                                     reply.append("\n编号").append(p);
                                 }
                                 replayInfo.setReplayMessage(reply.toString());
@@ -162,7 +164,7 @@ public class BlackHistory {
                         int q = 0;
                         StringBuilder reply = null;
                         for (int i = 1; i <= p; i++) {
-                            File gpic = new File("runFile/bh/bh" + i + ".jpg");
+                            File gpic = new File("runFile/bh/"+messageInfo.getGroupId()+"/bh" + i + ".jpg");
                             if (!gpic.exists()) {
                                 if (q == 0) {
                                     reply = new StringBuilder("编号");
@@ -206,7 +208,7 @@ public class BlackHistory {
             replayInfo.setReplayMessage("当前黑历史库共有" + num + "张图片"
                     + "\n请发送“稀音黑历史 数字编号”来定向查找图片"
                     + "\n直接发送“稀音黑历史”会随机抽取一张图片，并显示其id"
-                    + "\n*该功能仅能用来存储洁哥群各种聊天记录，且当事人有权要求删除");
+                    + "\n*该功能仅能用来存储群里各种聊天记录，且当事人有权要求删除");
         }
         return replayInfo;
     }
