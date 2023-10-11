@@ -1,3 +1,7 @@
+#跑路申明
+稀音bot依赖的mirai框架跑路了，那我也跑路咯
+
+
 # SceneBot
 基于AngelinaFrame的明日方舟主题QQ群聊机器人
 
